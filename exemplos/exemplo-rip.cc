@@ -6,6 +6,7 @@
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/netanim-module.h" //the header file for animation
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
@@ -13,7 +14,7 @@ NS_LOG_COMPONENT_DEFINE ("RipSimpleRouting");
 
 int main (int argc, char **argv)
 {
-  bool verbose = false;
+  bool verbose = true;
   bool printRoutingTables = false;
   bool showPings = false;
   std::string SplitHorizon ("PoisonReverse");
@@ -30,7 +31,7 @@ int main (int argc, char **argv)
     LogComponentEnableAll (LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE));
     LogComponentEnable ("RipSimpleRouting", LOG_LEVEL_INFO);
     LogComponentEnable ("Rip", LOG_LEVEL_ALL);
-    LogComponentEnable ("Ipva4Interface", LOG_LEVEL_ALL);
+    LogComponentEnable ("Ipv4Interface", LOG_LEVEL_ALL);
     LogComponentEnable ("Icmpv4L4Protocol", LOG_LEVEL_ALL);
     LogComponentEnable ("Ipv4L3Protocol", LOG_LEVEL_ALL);
     LogComponentEnable ("ArpCache", LOG_LEVEL_ALL);
@@ -155,6 +156,24 @@ int main (int argc, char **argv)
   AsciiTraceHelper ascii;
   csma.EnableAsciiAll (ascii.CreateFileStream ("exemplo-rip.tr"));
   csma.EnablePcapAll ("exemplo-rip", true);
+
+  NS_LOG_INFO ("Configuring Animation.");
+
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (nodes);
+  mobility.Install (routers);
+
+  AnimationInterface anim ("exemplo-rip.anim.xml");
+  anim.SetConstantPosition(src, 10.0, 10.0); //for node src
+  anim.SetConstantPosition(a, 20.0, 10.0); //for router a
+  anim.SetConstantPosition(b, 30.0, 10.0); //for router b
+  anim.SetConstantPosition(dst, 40.0, 10.0); //for node dst
+
+  anim.UpdateNodeDescription(0, "src");
+  anim.UpdateNodeDescription(1, "dst");
+  anim.UpdateNodeDescription(2, "a");
+  anim.UpdateNodeDescription(3, "b");
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds(131.0)); // parar a simulação após 131 segundos
