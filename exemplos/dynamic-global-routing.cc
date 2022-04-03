@@ -74,6 +74,8 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/netanim-module.h" //the header file for animation
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
@@ -82,6 +84,12 @@ NS_LOG_COMPONENT_DEFINE ("DynamicGlobalRoutingExample");
 int 
 main (int argc, char *argv[])
 {
+  // Adicionado
+  /* bool verbose = false;
+  bool printRoutingTables = false;
+  bool showPings = false;
+  std::string SplitHorizon ("PoisonReverse"); // Mecanismo de envenenamento (acho que nao precisa) */ 
+
   // The below value configures the default behavior of global routing.
   // By default, it is disabled.  To respond to interface events, set to true
   Config::SetDefault ("ns3::Ipv4GlobalRouting::RespondToInterfaceEvents", BooleanValue (true));
@@ -89,7 +97,23 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
   CommandLine cmd (__FILE__);
+  /* cmd.AddValue ("verbose", "turn on log components", verbose);
+  cmd.AddValue ("printRounthttps://www.nsnam.org/doxygen/group__globalrouting.htmlingTables", "Print routing tables at 30, 60 and 90 seconds", printRoutingTables);
+  cmd.AddValue ("showPings", "Show Ping6 reception", showPings);
+  cmd.AddValue ("splitHorizonStrategy", "Split Horizon strategy to use (NoSplitHorizon, SplitHorizon, PoisonReverse)", SplitHorizon); */
   cmd.Parse (argc, argv);
+
+  /* if (verbose)
+  {
+    LogComponentEnableAll (LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE));
+    LogComponentEnable ("OspfDynamicGlobalRouting", LOG_LEVEL_INFO);
+    LogComponentEnable ("Ospf", LOG_LEVEL_ALL);
+    LogComponentEnable ("Ipv4Interface", LOG_LEVEL_ALL);
+    LogComponentEnable ("Icmpv4L4Protocol", LOG_LEVEL_ALL);
+    LogComponentEnable ("Ipv4L3Protocol", LOG_LEVEL_ALL);
+    LogComponentEnable ("ArpCache", LOG_LEVEL_ALL);
+    LogComponentEnable ("V4Ping", LOG_LEVEL_ALL);
+  } */
 
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
@@ -218,6 +242,26 @@ main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper g;
   Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("dynamic-global-routing.routes", std::ios::out);
   g.PrintRoutingTableAllAt (Seconds (12), routingStream);
+
+  // Adicionado
+  /* NS_LOG_INFO ("Configuring Animation.");
+
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (nodes);
+  mobility.Install (routers); */
+
+  // Adicionado
+  /* AnimationInterface anim ("exemplo-rip.anim.xml");
+  anim.SetConstantPosition(src, 10.0, 10.0); //for node src
+  anim.SetConstantPosition(a, 20.0, 10.0); //for router a
+  anim.SetConstantPosition(b, 30.0, 10.0); //for router b
+  anim.SetConstantPosition(dst, 40.0, 10.0); //for node dst */
+  // Adicionado
+  /* anim.UpdateNodeDescription(0, "src");
+  anim.UpdateNodeDescription(1, "dst");
+  anim.UpdateNodeDescription(2, "a");
+  anim.UpdateNodeDescription(3, "b"); */
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
