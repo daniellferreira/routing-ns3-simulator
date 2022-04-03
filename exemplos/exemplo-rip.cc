@@ -14,7 +14,7 @@ NS_LOG_COMPONENT_DEFINE ("RipSimpleRouting");
 
 int main (int argc, char **argv)
 {
-  bool verbose = true;
+  bool verbose = false;
   bool printRoutingTables = false;
   bool showPings = false;
   std::string SplitHorizon ("PoisonReverse");
