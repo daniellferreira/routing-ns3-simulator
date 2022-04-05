@@ -115,6 +115,19 @@ main (int argc, char *argv[])
     LogComponentEnable ("V4Ping", LOG_LEVEL_ALL);
   } */
 
+  /* if (SplitHorizon == "NoSplitHorizon")
+  {
+    Config::SetDefault ("ns3::Rip::SplitHorizon", EnumValue (RipNg::NO_SPLIT_HORIZON));
+  }
+  else if (SplitHorizon == "SplitHorizon")
+  {
+    Config::SetDefault ("ns3::Rip::SplitHorizon", EnumValue (RipNg::SPLIT_HORIZON));
+  }
+  else
+  {
+    Config::SetDefault ("ns3::Rip::SplitHorizon", EnumValue (RipNg::POISON_REVERSE));
+  } */
+
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
   c.Create (7);
