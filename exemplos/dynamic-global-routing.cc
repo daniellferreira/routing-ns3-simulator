@@ -87,8 +87,7 @@ main (int argc, char *argv[])
   // Adicionado
   /* bool verbose = false;
   bool printRoutingTables = false;
-  bool showPings = false;
-  std::string SplitHorizon ("PoisonReverse"); // Mecanismo de envenenamento (acho que nao precisa) */ 
+  bool showPings = false;*/
 
   // The below value configures the default behavior of global routing.
   // By default, it is disabled.  To respond to interface events, set to true
@@ -98,9 +97,8 @@ main (int argc, char *argv[])
   // Bind ()s at run-time, via command-line arguments
   CommandLine cmd (__FILE__);
   /* cmd.AddValue ("verbose", "turn on log components", verbose);
-  cmd.AddValue ("printRounthttps://www.nsnam.org/doxygen/group__globalrouting.htmlingTables", "Print routing tables at 30, 60 and 90 seconds", printRoutingTables);
-  cmd.AddValue ("showPings", "Show Ping6 reception", showPings);
-  cmd.AddValue ("splitHorizonStrategy", "Split Horizon strategy to use (NoSplitHorizon, SplitHorizon, PoisonReverse)", SplitHorizon); */
+  cmd.AddValue ("printRountingTables", "Print routing tables at 30, 60 and 90 seconds", printRoutingTables);
+  cmd.AddValue ("showPings", "Show Ping6 reception", showPings); */
   cmd.Parse (argc, argv);
 
   /* if (verbose)
@@ -113,19 +111,6 @@ main (int argc, char *argv[])
     LogComponentEnable ("Ipv4L3Protocol", LOG_LEVEL_ALL);
     LogComponentEnable ("ArpCache", LOG_LEVEL_ALL);
     LogComponentEnable ("V4Ping", LOG_LEVEL_ALL);
-  } */
-
-  /* if (SplitHorizon == "NoSplitHorizon")
-  {
-    Config::SetDefault ("ns3::Rip::SplitHorizon", EnumValue (RipNg::NO_SPLIT_HORIZON));
-  }
-  else if (SplitHorizon == "SplitHorizon")
-  {
-    Config::SetDefault ("ns3::Rip::SplitHorizon", EnumValue (RipNg::SPLIT_HORIZON));
-  }
-  else
-  {
-    Config::SetDefault ("ns3::Rip::SplitHorizon", EnumValue (RipNg::POISON_REVERSE));
   } */
 
   NS_LOG_INFO ("Create nodes.");
