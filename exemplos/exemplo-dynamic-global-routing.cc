@@ -85,7 +85,7 @@ int
 main (int argc, char *argv[])
 {
   // Adicionado
-  bool verbose = false;
+  bool verbose = true;
 
   // The below value configures the default behavior of global routing.
   // By default, it is disabled.  To respond to interface events, set to true
