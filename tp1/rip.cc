@@ -7,6 +7,7 @@
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/netanim-module.h" //the header file for animation
 #include "ns3/mobility-helper.h"
+#include "ns3/applications-module.h"
 
 using namespace ns3;
 
@@ -17,13 +18,16 @@ int main (int argc, char **argv)
   bool verbose = false;
   bool printRoutingTables = false;
   bool showPings = false;
+  double simulationTime = 131.0; //seconds
   std::string SplitHorizon ("PoisonReverse");
+  std::string transportProt = "Udp";
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.AddValue ("printRountingTables", "Print routing tables at 30, 60 and 90 seconds", printRoutingTables);
   cmd.AddValue ("showPings", "Show Ping6 reception", showPings);
   cmd.AddValue ("splitHorizonStrategy", "Split Horizon strategy to use (NoSplitHorizon, SplitHorizon, PoisonReverse)", SplitHorizon);
+  cmd.AddValue ("transportProt", "Transport protocol to use: Tcp, Udp", transportProt);
   cmd.Parse (argc, argv);
 
   if (verbose)
@@ -149,19 +153,28 @@ int main (int argc, char **argv)
   }
 
   NS_LOG_INFO ("Create Applications.");
-  uint32_t packetSize = 1024; //bytes
-  Time interPacketInterval = Seconds (1.0);
-  V4PingHelper ping ("10.0.3.2"); //destino
-
-  ping.SetAttribute ("Interval", TimeValue (interPacketInterval));
-  ping.SetAttribute ("Size", UintegerValue (packetSize));
-  if (showPings)
-  {
-    ping.SetAttribute ("Verbose", BooleanValue (true));
-  }
-  ApplicationContainer apps = ping.Install (src);
+  //
+  // Create a UdpEchoServer application on node one.
+  //
+  uint16_t port = 9;  // well-known echo port number
+  UdpEchoServerHelper server (port);
+  ApplicationContainer apps = server.Install (dst);
   apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (110.0));
+  apps.Stop (Seconds (simulationTime - 10.0));
+
+  //
+  // Create a UdpEchoClient application to send UDP datagrams from node zero to
+  // node one.
+  //
+  uint32_t packetSize = 1024;
+  Time interPacketInterval = Seconds (1.0);
+  
+  UdpEchoClientHelper client (iic4.GetAddress(1), port);
+  client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+  client.SetAttribute ("PacketSize", UintegerValue (packetSize));
+  apps = client.Install (src);
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (simulationTime - 20.0));
 
   AsciiTraceHelper ascii;
   csma.EnableAsciiAll (ascii.CreateFileStream ("tp1-rip.tr"));
@@ -188,7 +201,7 @@ int main (int argc, char **argv)
   anim.UpdateNodeDescription(4, "Router_C");
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Stop (Seconds(131.0)); // parar a simulação após 131 segundos
+  Simulator::Stop (Seconds(simulationTime)); // parar a simulação após 131 segundos
   Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
