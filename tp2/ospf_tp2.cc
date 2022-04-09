@@ -24,6 +24,8 @@
 // automatically.
 //
 // Network topology
+//			     net1				        net2          		 net3				        net4
+//  HostT ---------- RouterA ---------- RouterB ---------- RouterC ---------- HostR
 //
 //  n0
 //     \ p-p
@@ -74,6 +76,8 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/netanim-module.h" //the header file for animation
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
@@ -82,6 +86,9 @@ NS_LOG_COMPONENT_DEFINE ("DynamicGlobalRoutingExample");
 int 
 main (int argc, char *argv[])
 {
+  // Adicionado
+  bool verbose = true;
+
   // The below value configures the default behavior of global routing.
   // By default, it is disabled.  To respond to interface events, set to true
   Config::SetDefault ("ns3::Ipv4GlobalRouting::RespondToInterfaceEvents", BooleanValue (true));
@@ -89,42 +96,79 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
   CommandLine cmd (__FILE__);
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
 
-  NS_LOG_INFO ("Create nodes.");
-  NodeContainer c;
-  c.Create (7);
-  NodeContainer n0n2 = NodeContainer (c.Get (0), c.Get (2));
-  NodeContainer n1n2 = NodeContainer (c.Get (1), c.Get (2));
-  NodeContainer n5n6 = NodeContainer (c.Get (5), c.Get (6));
-  NodeContainer n1n6 = NodeContainer (c.Get (1), c.Get (6));
-  NodeContainer n2345 = NodeContainer (c.Get (2), c.Get (3), c.Get (4), c.Get (5));
+   if (verbose)
+  {
+    LogComponentEnableAll (LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE));
+    LogComponentEnable ("DynamicGlobalRoutingExample", LOG_LEVEL_WARN);
+  }
 
+  NS_LOG_WARN ("Create nodes.");
+
+  NS_LOG_INFO ("Start nodes creation.");
+  // Node: elemento da rede, pode ser um host, roteador ou até mais alto nivel como aplicacao
+  Ptr<Node> src = CreateObject<Node> ();
+  Names::Add ("HostT", src);
+  Ptr<Node> dst = CreateObject<Node> ();
+  Names::Add ("HostR", dst);
+  
+  Ptr<Node> a = CreateObject<Node> ();
+  Names::Add ("RouterA", a);
+  Ptr<Node> b = CreateObject<Node> ();
+  Names::Add ("RouterB", b);
+  Ptr<Node> c = CreateObject<Node> ();
+  Names::Add ("RouterC", c);
+  
+//redes: considerando que cada enlace é uma rede separada, sem meio compartilhado
+  NodeContainer net1 (src, a);
+  NodeContainer net2 (a, b);
+  NodeContainer net3 (b, c);
+  NodeContainer net4 (c, dst);
+  NodeContainer routers (a, b, c);
+  NodeContainer nodes (src, dst);
+
+  NS_LOG_INFO ("End nodes creation.");
+
+  NS_LOG_INFO ("Start channels creation.");
+  // Enlaces usam CSMA para controle de acesso ao meio
+  // É como se tivesse ligado os cabos entre as máquinas
+
+  CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+  NetDeviceContainer ndc1 = csma.Install (net1);
+  NetDeviceContainer ndc2 = csma.Install (net2);
+  NetDeviceContainer ndc3 = csma.Install (net3);
+  NetDeviceContainer ndc4 = csma.Install (net4);
+
+  
   InternetStackHelper internet;
   internet.Install (c);
 
   // We create the channels first without any IP addressing information
-  NS_LOG_INFO ("Create channels.");
+  NS_LOG_WARN ("Create channels.");
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  NetDeviceContainer d0d2 = p2p.Install (n0n2);
-  NetDeviceContainer d1d6 = p2p.Install (n1n6);
+  NetDeviceContainer d0d2 = p2p.Install (net1);
+  NetDeviceContainer d1d6 = p2p.Install (net4);
 
-  NetDeviceContainer d1d2 = p2p.Install (n1n2);
+  NetDeviceContainer d1d2 = p2p.Install (net2);
 
   p2p.SetDeviceAttribute ("DataRate", StringValue ("1500kbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
-  NetDeviceContainer d5d6 = p2p.Install (n5n6);
+  NetDeviceContainer d5d6 = p2p.Install (net3);
 
   // We create the channels first without any IP addressing information
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", StringValue ("5Mbps"));
   csma.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  NetDeviceContainer d2345 = csma.Install (n2345);
+  NetDeviceContainer d2345 = csma.Install (routers);
 
   // Later, we add IP addresses.
-  NS_LOG_INFO ("Assign IP Addresses.");
+  NS_LOG_WARN ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   ipv4.Assign (d0d2);
@@ -147,7 +191,7 @@ main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
-  NS_LOG_INFO ("Create Applications.");
+  NS_LOG_WARN ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      InetSocketAddress (i5i6.GetAddress (1), port));
@@ -186,13 +230,13 @@ main (int argc, char *argv[])
 
 
   AsciiTraceHelper ascii;
-  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("dynamic-global-routing.tr");
+  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("exemplo-dynamic-global-routing.tr");
   p2p.EnableAsciiAll (stream);
   csma.EnableAsciiAll (stream);
   internet.EnableAsciiIpv4All (stream);
 
-  p2p.EnablePcapAll ("dynamic-global-routing");
-  csma.EnablePcapAll ("dynamic-global-routing", false);
+  p2p.EnablePcapAll ("exemplo-dynamic-global-routing");
+  csma.EnablePcapAll ("exemplo-dynamic-global-routing", false);
  
   Ptr<Node> n1 = c.Get (1);
   Ptr<Ipv4> ipv41 = n1->GetObject<Ipv4> ();
@@ -216,12 +260,31 @@ main (int argc, char *argv[])
 
   // Trace routing tables 
   Ipv4GlobalRoutingHelper g;
-  Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("dynamic-global-routing.routes", std::ios::out);
+  Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("exemplo-dynamic-global-routing.routes", std::ios::out);
   g.PrintRoutingTableAllAt (Seconds (12), routingStream);
 
-  NS_LOG_INFO ("Run Simulation.");
+  // Adicionado
+  /* NS_LOG_WARN ("Configuring Animation.");
+
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (nodes);
+  mobility.Install (routers); */
+
+  // Adicionado
+  /* AnimationInterface anim ("exemplo-rip.anim.xml");
+  anim.SetConstantPosition(src, 10.0, 10.0); //for node src
+  anim.SetConstantPosition(a, 20.0, 10.0); //for router a
+  anim.SetConstantPosition(b, 30.0, 10.0); //for router b
+  anim.SetConstantPosition(dst, 40.0, 10.0); //for node dst */
+  // Adicionado
+  /* anim.UpdateNodeDescription(0, "src");
+  anim.UpdateNodeDescription(1, "dst");
+  anim.UpdateNodeDescription(2, "a");
+  anim.UpdateNodeDescription(3, "b"); */
+
+  NS_LOG_WARN ("Run Simulation.");
   Simulator::Run ();
   Simulator::Destroy ();
-  NS_LOG_INFO ("Done.");
+  NS_LOG_WARN ("Done.");
 }
-
