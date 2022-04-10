@@ -13,7 +13,7 @@
 //  net4 |     net8 /     \          | net6
 //       |         /       \         |  
 //        \ RouterC ------- RouterD /
-//                   net
+//                   net5
 //
 
 // - Tracing of queues and packet receptions to file "dynamic-global-routing.tr"
