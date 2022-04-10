@@ -1,3 +1,8 @@
+// Network topology
+
+//			     net1				        net2          		 net3				        net4
+//  HostT ---------- RouterA ---------- RouterB ---------- RouterC ---------- HostR
+
 #include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"

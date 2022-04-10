@@ -1,7 +1,7 @@
 // Network topology
+
 //			     net1				        net2          		 net3				        net4
 //  HostT ---------- RouterA ---------- RouterB ---------- RouterC ---------- HostR
-//
 
 #include <iostream>
 #include <fstream>
