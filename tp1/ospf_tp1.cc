@@ -67,9 +67,9 @@ int main (int argc, char *argv[])
   NodeContainer net4 (c, dst);
   NodeContainer routers (a, b, c);
   NodeContainer nodes (src, dst);
-  NS_LOG_INFO ("End create nodes.");
+  NS_LOG_WARN ("End create nodes.");
 
-  NS_LOG_INFO ("Create channels.");
+  NS_LOG_WARN ("Create channels.");
   // Enlaces usam CSMA para controle de acesso ao meio
   // É como se tivesse ligado os cabos entre as máquinas
   CsmaHelper csma;
@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
   NetDeviceContainer ndc3 = csma.Install (net3);
   NetDeviceContainer ndc4 = csma.Install (net4);
 
-  NS_LOG_INFO ("Create IPv4 and routing.");
+  NS_LOG_WARN ("Create IPv4 and routing.");
 
   // Na implementacao do Global routing nao tem essa parte do RoutingHelper.
   
@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
   csma.EnableAsciiAll (ascii.CreateFileStream ("tp1-ospf.tr"));
   csma.EnablePcapAll ("tp1-ospf", true);
 
-  NS_LOG_INFO ("Configuring Animation.");
+  NS_LOG_WARN ("Configuring Animation.");
 
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -171,9 +171,9 @@ int main (int argc, char *argv[])
   Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("ospf_tp1.routes", std::ios::out);
   g.PrintRoutingTableAllAt (Seconds (12), routingStream);
 
-  NS_LOG_INFO ("Run Simulation.");
+  NS_LOG_WARN ("Run Simulation.");
   Simulator::Stop (Seconds(simulationTime)); // parar a simulação após 131 segundos
   Simulator::Run ();
   Simulator::Destroy ();
-  NS_LOG_INFO ("Done.");
+  NS_LOG_WARN ("Done.");
 }
