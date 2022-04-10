@@ -201,6 +201,13 @@ int main (int argc, char **argv)
   anim.UpdateNodeDescription(4, "Router_C");
 
   NS_LOG_INFO ("Run Simulation.");
+  Ptr<Ipv4> ipv4A = a->GetObject<Ipv4> ();
+  // The first ifIndex is 0 for loopback, then the first p2p is numbered 1,
+  // then the next p2p is numbered 2
+  uint32_t ipv4ifIndex1 = 2;
+  Simulator::Schedule (Seconds (30.00),&Ipv4::SetDown,ipv4A, ipv4ifIndex1);
+  Simulator::Schedule (Seconds (40.00),&Ipv4::SetUp,ipv4A, ipv4ifIndex1);
+
   Simulator::Stop (Seconds(simulationTime)); // parar a simulação após 131 segundos
   Simulator::Run ();
   Simulator::Destroy ();
