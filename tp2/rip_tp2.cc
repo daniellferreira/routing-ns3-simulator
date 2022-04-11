@@ -279,3 +279,5 @@ int main (int argc, char **argv)
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
 }
+
+//TODO: como lidar com o peso 2 nos enlaces net7 e net8
