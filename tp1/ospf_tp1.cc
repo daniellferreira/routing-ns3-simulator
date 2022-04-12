@@ -61,10 +61,10 @@ int main (int argc, char *argv[])
   Names::Add ("RouterC", c);
   
 //redes: considerando que cada enlace é uma rede separada, sem meio compartilhado
-  NodeContainer net1 (src, a); // interface 1 de a
+  NodeContainer net1 (src, a); // interface 1 de a liga com o src, tambem e o enlace 1 do src
   NodeContainer net2 (a, b);   // interface 2 de a e 1 de b
   NodeContainer net3 (b, c);   // interface 2 de b e 1 de c
-  NodeContainer net4 (c, dst); // interface 2 de c
+  NodeContainer net4 (c, dst); // interface 2 de c, tambem e o 1 do dst
   NodeContainer routers (a, b, c);
   NodeContainer nodes (src, dst);
   NS_LOG_WARN ("End create nodes.");
@@ -169,7 +169,7 @@ int main (int argc, char *argv[])
   Ptr<Ipv4> ipv4A = a->GetObject<Ipv4> ();
   // The first ifIndex is 0 for loopback, then the first p2p is numbered 1,
   // then the next p2p is numbered 2
-  uint32_t ipv4ifIndex1 = 2;
+  uint32_t ipv4ifIndex1 = 1;
   Simulator::Schedule (Seconds (30.00),&Ipv4::SetDown,ipv4A, ipv4ifIndex1);
   Simulator::Schedule (Seconds (40.00),&Ipv4::SetUp,ipv4A, ipv4ifIndex1);
 
