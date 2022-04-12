@@ -37,7 +37,7 @@ int main (int argc, char **argv)
   bool verbose = false;
   bool printRoutingTables = false;
   bool showPings = false;
-  double simulationTime = 131.0; //seconds
+  double simulationTime = 300.0; //seconds
   std::string SplitHorizon ("PoisonReverse");
   std::string transportProt = "Udp";
 
@@ -209,30 +209,33 @@ int main (int argc, char **argv)
   UdpEchoServerHelper server (port);
   ApplicationContainer apps = server.Install (dst);
   apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (simulationTime - 10.0));
+  apps.Stop (Seconds (simulationTime));
 
   //
   // Create a UdpEchoClient application to send UDP datagrams from node zero to
   // node one.
   //
   uint32_t packetSize = 1024;
+  uint32_t maxPackets = simulationTime;
   Time interPacketInterval = Seconds (1.0);
   
   Ipv4Address serverAddress1 = iic3.GetAddress(1);
   UdpEchoClientHelper client1 (serverAddress1, port);
   client1.SetAttribute ("Interval", TimeValue (interPacketInterval));
   client1.SetAttribute ("PacketSize", UintegerValue (packetSize));
+  client1.SetAttribute ("MaxPackets", UintegerValue (maxPackets));
   apps = client1.Install (src);
   apps.Start (Seconds (2.0));
-  apps.Stop (Seconds (simulationTime - 20.0));
+  apps.Stop (Seconds (simulationTime));
 
   Ipv4Address serverAddress2 = iic6.GetAddress(1);
   UdpEchoClientHelper client2 (serverAddress2, port);
   client2.SetAttribute ("Interval", TimeValue (interPacketInterval));
   client2.SetAttribute ("PacketSize", UintegerValue (packetSize));
+  client2.SetAttribute ("MaxPackets", UintegerValue (maxPackets));
   apps = client2.Install (src);
   apps.Start (Seconds (1.5));
-  apps.Stop (Seconds (simulationTime - 20.0));
+  apps.Stop (Seconds (simulationTime));
 
   AsciiTraceHelper ascii;
   csma.EnableAsciiAll (ascii.CreateFileStream ("tp2-rip.tr"));
@@ -264,7 +267,7 @@ int main (int argc, char **argv)
   Ptr<Ipv4> ipv4B = b->GetObject<Ipv4> ();
   // The first ifIndex is 0 for loopback, then the first p2p is numbered 1,
   // then the next p2p is numbered 2
-  uint32_t ipv4ifIndex1 = 2;
+  uint32_t ipv4ifIndex1 = 1;
   Simulator::Schedule (Seconds (30.00), &Ipv4::SetDown, ipv4B, ipv4ifIndex1);
   Simulator::Schedule (Seconds (40.00), &Ipv4::SetUp, ipv4B, ipv4ifIndex1);
 
