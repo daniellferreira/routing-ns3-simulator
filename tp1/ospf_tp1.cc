@@ -3,11 +3,7 @@
 //			     net1				        net2          		 net3				        net4
 //  HostT ---------- RouterA ---------- RouterB ---------- RouterC ---------- HostR
 
-#include <iostream>
 #include <fstream>
-#include <string>
-#include <cassert>
-
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/csma-module.h"
@@ -25,7 +21,7 @@ NS_LOG_COMPONENT_DEFINE ("DynamicGlobalRoutingExample");
 int main (int argc, char *argv[])
 {
   // Adicionado
-  bool verbose = true;
+  bool verbose = false;
   double simulationTime = 131.0; //seconds
   std::string transportProt = "Udp";
 
@@ -156,7 +152,7 @@ int main (int argc, char *argv[])
   anim.SetConstantPosition(src, 10.0, 10.0); //for node src
   anim.SetConstantPosition(a, 20.0, 10.0); //for router a
   anim.SetConstantPosition(b, 30.0, 10.0); //for router b
-  anim.SetConstantPosition(c, 40.0, 10.0); //for router b
+  anim.SetConstantPosition(c, 40.0, 10.0); //for router c
   anim.SetConstantPosition(dst, 50.0, 10.0); //for node dst
 
   anim.UpdateNodeDescription(0, "Host_T");
@@ -178,3 +174,5 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
   NS_LOG_WARN ("Done.");
 }
+
+//TODO: como lidar com o peso 2 nos enlaces net7 e net8
