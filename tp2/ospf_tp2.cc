@@ -42,6 +42,7 @@ int main (int argc, char *argv[])
   // The below value configures the default behavior of global routing.
   // By default, it is disabled.  To respond to interface events, set to true
   Config::SetDefault ("ns3::Ipv4GlobalRouting::RespondToInterfaceEvents", BooleanValue (true));
+  //Config::SetDefault ("ns3::Ipv4GlobalRouting::RandomEcmpRouting", BooleanValue (true));
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
@@ -87,19 +88,19 @@ int main (int argc, char *argv[])
   NS_LOG_WARN ("End create nodes.");
 
   NS_LOG_WARN ("Create channels.");
-  // Enlaces usam CSMA para controle de acesso ao meio
+  // Enlaces usam CSMA e P2P para controle de acesso ao meio
   // É como se tivesse ligado os cabos entre as máquinas
-  PointToPointHelper csma;
-  csma.SetDeviceAttribute ("DataRate", DataRateValue (5000000));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-  NetDeviceContainer ndc1 = csma.Install (net1);
-  NetDeviceContainer ndc2 = csma.Install (net2);
-  NetDeviceContainer ndc3 = csma.Install (net3);
-  NetDeviceContainer ndc4 = csma.Install (net4);
-  NetDeviceContainer ndc5 = csma.Install (net5);
-  NetDeviceContainer ndc6 = csma.Install (net6);
-  NetDeviceContainer ndc7 = csma.Install (net7);
-  NetDeviceContainer ndc8 = csma.Install (net8);
+  PointToPointHelper p2p;
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (5000000));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+  NetDeviceContainer ndc1 = p2p.Install (net1);
+  NetDeviceContainer ndc2 = p2p.Install (net2);
+  NetDeviceContainer ndc3 = p2p.Install (net3);
+  NetDeviceContainer ndc4 = p2p.Install (net4);
+  NetDeviceContainer ndc5 = p2p.Install (net5);
+  NetDeviceContainer ndc6 = p2p.Install (net6);
+  NetDeviceContainer ndc7 = p2p.Install (net7);
+  NetDeviceContainer ndc8 = p2p.Install (net8);
 
   NS_LOG_WARN ("Create IPv4 and routing.");
 
@@ -190,8 +191,8 @@ int main (int argc, char *argv[])
   apps.Stop (Seconds (simulationTime));  
 
   AsciiTraceHelper ascii;
-  csma.EnableAsciiAll (ascii.CreateFileStream ("tp2-ospf.tr"));
-  csma.EnablePcapAll ("tp2-ospf", true);
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("tp2-ospf.tr"));
+  p2p.EnablePcapAll ("tp2-ospf", true);
 
   NS_LOG_WARN ("Configuring Animation.");
 
