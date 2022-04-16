@@ -89,8 +89,8 @@ int main (int argc, char *argv[])
   NS_LOG_WARN ("Create channels.");
   // Enlaces usam CSMA para controle de acesso ao meio
   // É como se tivesse ligado os cabos entre as máquinas
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
+  PointToPointHelper csma;
+  csma.SetDeviceAttribute ("DataRate", DataRateValue (5000000));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer ndc1 = csma.Install (net1);
   NetDeviceContainer ndc2 = csma.Install (net2);
@@ -148,7 +148,8 @@ int main (int argc, char *argv[])
   // tables in the nodes.
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  NS_LOG_WARN ("ERROR in the PopoluateRoutingTables.");
+  //NS_LOG_WARN ("DEBUG: Problem here.");
+
   // Creio que isso fico no lugar do Ptr<Ipv4StaticRouting> staticRouting; 
   // no caso do rip
 
