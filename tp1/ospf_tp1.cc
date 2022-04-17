@@ -21,7 +21,7 @@ NS_LOG_COMPONENT_DEFINE ("DynamicGlobalRoutingExample");
 int main (int argc, char *argv[])
 {
   // Adicionado
-  bool verbose = false;
+  bool verbose = true;
   double simulationTime = 131.0; //seconds
   std::string transportProt = "Udp";
 
